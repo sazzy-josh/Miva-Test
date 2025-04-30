@@ -2,7 +2,22 @@
 
 A comprehensive web application for managing student data, course enrollments, and academic records. Built with Next.js 15.3.1, React 19, and Chakra UI with a dark mode interface.
 
-![Student Management System](https://miva-university.s3.eu-west-2.amazonaws.com/wp-content/uploads/2023/05/15101916/miva-mobile-logo.png)
+## User Interface
+
+### Login Screen
+The application features a clean, dark-themed login interface with:
+- Email and password input fields
+- Remember me option
+- Forgot password link
+- Demo credentials displayed for easy access
+- MIVA University branding
+
+### Dashboard
+The dashboard provides an overview of the student management system with:
+- Key metrics (Total Students, Total Courses, Average GPA, Active Semesters)
+- Recent students list with search functionality
+- Student information including name, registration number, major, GPA, and courses
+- Navigation sidebar for accessing different sections of the application
 
 ## Features
 
@@ -67,6 +82,8 @@ The system includes a mock authentication system with the following credentials:
 
 - **Email**: admin@example.com
 - **Password**: password@123
+
+![Login Screen](./public/screenshots/login-screen.png)
 
 ## Project Structure
 
