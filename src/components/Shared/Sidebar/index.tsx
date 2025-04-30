@@ -4,6 +4,7 @@ import {usePathname} from "next/navigation";
 import {FiX, FiUser, FiHome, FiLogOut} from "react-icons/fi";
 import Image from "next/image";
 import {signOut} from "next-auth/react";
+import {useState} from "react";
 interface NavItemProps {
   href: string;
   icon: React.ReactNode;
@@ -33,10 +34,21 @@ interface SidebarProps {
 }
 const Sidebar = ({isSidebarOpen, closeSidebar}: SidebarProps) => {
   const pathname = usePathname();
+  const [isSigningOut, setIsSigningOut] = useState(false);
   const navItems = [
     {href: "/dashboard", icon: <FiHome />, label: "Dashboard"},
     {href: "/students", icon: <FiUser />, label: "Students"},
   ];
+
+  const handleSignOut = async () => {
+    setIsSigningOut(true);
+    try {
+      await signOut({callbackUrl: "/login"});
+    } catch (error) {
+      console.error("Error signing out:", error);
+      setIsSigningOut(false);
+    }
+  };
   return (
     <>
       {/* Mobile sidebar backdrop */}
@@ -91,11 +103,23 @@ const Sidebar = ({isSidebarOpen, closeSidebar}: SidebarProps) => {
           <div className='p-4 border-t border-gray-700'>
             <div className='my-2 border-gray-700'></div>
             <button
-              onClick={() => signOut({callbackUrl: "/login"})}
-              className={`flex items-center gap-2 text-gray-300 hover:text-primary transition-colors`}
+              onClick={handleSignOut}
+              disabled={isSigningOut}
+              className={`flex cursor-pointer items-center gap-2 text-gray-300 hover:text-primary transition-colors ${
+                isSigningOut ? "opacity-70 cursor-not-allowed" : ""
+              }`}
             >
-              <FiLogOut className='h-4 w-4' />
-              <span>Logout</span>
+              {isSigningOut ? (
+                <>
+                  <div className='animate-spin h-4 w-4 border-2 border-gray-300 border-t-primary rounded-full mr-2'></div>
+                  <span>Signing out...</span>
+                </>
+              ) : (
+                <>
+                  <FiLogOut className='h-4 w-4' />
+                  <span>Logout</span>
+                </>
+              )}
             </button>
           </div>
         </div>
