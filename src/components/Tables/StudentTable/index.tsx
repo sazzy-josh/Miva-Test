@@ -98,11 +98,9 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     setCurrentPage(1);
   };
 
-  // If not using server pagination, handle client-side filtering and pagination
   let displayStudents = students;
 
   if (!useServerPagination) {
-    // Filter by search term if provided
     if (search) {
       const searchLower = search.toLowerCase();
       displayStudents = initialStudents.filter(

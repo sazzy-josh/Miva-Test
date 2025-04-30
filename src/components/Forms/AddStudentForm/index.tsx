@@ -5,6 +5,7 @@ import Link from "next/link";
 import {FiArrowLeft, FiSave, FiX} from "react-icons/fi";
 import {Student} from "@/types/student";
 type FormData = Omit<Student, "id" | "avatar" | "enrolledCourses">;
+
 export default function AddStudentForm() {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -15,10 +16,13 @@ export default function AddStudentForm() {
     dateOfBirth: "",
     gpa: 0,
   });
+
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {},
   );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (field: keyof FormData, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
@@ -31,6 +35,7 @@ export default function AddStudentForm() {
       }));
     }
   };
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
     let isValid = true;
@@ -64,6 +69,7 @@ export default function AddStudentForm() {
     setErrors(newErrors);
     return isValid;
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -93,6 +99,7 @@ export default function AddStudentForm() {
       setIsSubmitting(false);
     }
   };
+
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
@@ -106,6 +113,7 @@ export default function AddStudentForm() {
           <h1 className='text-2xl font-bold'>Add New Student</h1>
         </div>
       </div>
+
       <div className='bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
         <form onSubmit={handleSubmit} className='p-6'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>

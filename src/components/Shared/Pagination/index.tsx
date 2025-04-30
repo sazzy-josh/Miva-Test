@@ -9,6 +9,7 @@ export interface PaginationProps {
   itemsPerPageOptions?: number[];
   showItemsPerPage?: boolean;
 }
+
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalItems,
@@ -21,6 +22,7 @@ const Pagination: React.FC<PaginationProps> = ({
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
   return (
     <div className='flex flex-col sm:flex-row justify-between items-center px-4 py-3 border-t border-gray-700 gap-4'>
       <div className='text-sm text-gray-400 flex flex-wrap items-center gap-2'>
@@ -53,6 +55,7 @@ const Pagination: React.FC<PaginationProps> = ({
           </div>
         )}
       </div>
+
       <div className='flex items-center space-x-2'>
         <button
           onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
@@ -94,6 +97,7 @@ const Pagination: React.FC<PaginationProps> = ({
             );
           })}
         </div>
+
         <button
           onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
           disabled={currentPage === totalPages || totalPages === 0}

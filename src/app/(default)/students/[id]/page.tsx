@@ -4,13 +4,15 @@ import {FiArrowLeft, FiCalendar, FiMail, FiBook} from "react-icons/fi";
 import {Course} from "@/types/student";
 import StudentActions from "@/components/Actions/StudentActions";
 import {getStudentById} from "@/lib/db";
+
 type Props = {
-  params: { id: string };
+  params: {id: string};
 };
-export default async function StudentDetailPage({ params }: Props) {
-  // Make the function async to properly handle dynamic params
+
+export default async function StudentDetailPage({params}: Props) {
   const student = getStudentById(params.id);
   const courses: Course[] = [];
+
   if (!student) {
     return (
       <div className='bg-gray-800 rounded-xl shadow-sm p-6 text-center'>
@@ -29,6 +31,7 @@ export default async function StudentDetailPage({ params }: Props) {
       </div>
     );
   }
+
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>

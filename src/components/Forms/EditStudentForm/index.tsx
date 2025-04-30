@@ -8,6 +8,7 @@ type FormData = Omit<Student, "id" | "avatar" | "enrolledCourses">;
 interface EditStudentFormProps {
   student: Student;
 }
+
 export default function EditStudentForm({student}: EditStudentFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -18,9 +19,11 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
     dateOfBirth: student.dateOfBirth,
     gpa: student.gpa,
   });
+
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>(
     {},
   );
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const handleChange = (field: keyof FormData, value: string | number) => {
@@ -35,6 +38,7 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
       }));
     }
   };
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
     let isValid = true;
@@ -68,6 +72,7 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
     setErrors(newErrors);
     return isValid;
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) {
@@ -96,6 +101,7 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
       setIsSubmitting(false);
     }
   };
+
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>

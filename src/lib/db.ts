@@ -1,5 +1,7 @@
 import {Student, Course} from "@/types/student";
+
 let students: Student[] = [];
+
 const courses: Course[] = [
   {
     id: "CS101",
@@ -53,6 +55,7 @@ const courses: Course[] = [
     enrolledStudents: ["3"],
   },
 ];
+
 if (typeof window !== "undefined") {
   const storedStudents = localStorage.getItem("students");
   if (storedStudents) {
@@ -61,17 +64,21 @@ if (typeof window !== "undefined") {
     localStorage.setItem("students", JSON.stringify(students));
   }
 }
+
 const saveToStorage = () => {
   if (typeof window !== "undefined") {
     localStorage.setItem("students", JSON.stringify(students));
   }
 };
+
 export const generateId = (): string => {
   return Math.random().toString(36).substring(2, 9);
 };
+
 export const getStudents = (): Student[] => {
   return students;
 };
+
 export const getPaginatedStudents = (
   page: number = 1,
   limit: number = 10,
@@ -88,6 +95,7 @@ export const getPaginatedStudents = (
         student.major.toLowerCase().includes(searchLower),
     );
   }
+
   const total = filteredStudents.length;
   const totalPages = Math.ceil(total / limit);
   const validPage = Math.max(1, Math.min(page, totalPages || 1));
@@ -101,15 +109,18 @@ export const getPaginatedStudents = (
     totalPages,
   };
 };
+
 export const getStudentById = (id: string): Student | undefined => {
   return students.find((student) => student.id === id);
 };
+
 export const createStudent = (student: Omit<Student, "id">): Student => {
   const newStudent = {...student, id: generateId()};
   students.push(newStudent);
   saveToStorage();
   return newStudent;
 };
+
 export const updateStudent = (
   id: string,
   updatedStudent: Partial<Student>,
@@ -122,6 +133,7 @@ export const updateStudent = (
   }
   return undefined;
 };
+
 export const deleteStudent = (id: string): boolean => {
   const index = students.findIndex((student) => student.id === id);
   if (index !== -1) {
@@ -131,6 +143,7 @@ export const deleteStudent = (id: string): boolean => {
   }
   return false;
 };
+
 export const getCourses = (): Course[] => {
   return courses;
 };

@@ -4,15 +4,18 @@ import {useSession} from "next-auth/react";
 import {FiMenu} from "react-icons/fi";
 import Sidebar from "@/components/Shared/Sidebar";
 import Image from "next/image";
+
 export default function DefaultLayout({children}: {children: React.ReactNode}) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const {data: session} = useSession();
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
+
   return (
     <div className='min-h-screen bg-gray-900'>
       {/* Sidebar Component */}

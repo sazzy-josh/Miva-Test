@@ -1,5 +1,6 @@
 import {SessionProvider} from "next-auth/react";
 import {Provider} from "@/components/ui/provider";
+
 export default function GlobalProvider({
   children,
 }: {

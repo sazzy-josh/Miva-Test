@@ -6,6 +6,7 @@ import Link from "next/link";
 import {FiMail, FiAlertCircle, FiEye, FiEyeOff} from "react-icons/fi";
 import {IoKeySharp} from "react-icons/io5";
 import Image from "next/image";
+
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -15,6 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -37,6 +39,7 @@ export default function LoginPage() {
       console.error(error);
     }
   };
+
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-gray-900 py-12 px-4'>
       <div className='mb-8'>

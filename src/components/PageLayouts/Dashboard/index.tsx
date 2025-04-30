@@ -88,6 +88,7 @@ export default function Dashboard() {
     },
     [],
   );
+
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -114,9 +115,11 @@ export default function Dashboard() {
       setIsLoading(false);
     }
   }, [updateStatCards]);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
@@ -128,6 +131,7 @@ export default function Dashboard() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [fetchData]);
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-[calc(100vh-120px)]'>
@@ -135,6 +139,7 @@ export default function Dashboard() {
       </div>
     );
   }
+
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>

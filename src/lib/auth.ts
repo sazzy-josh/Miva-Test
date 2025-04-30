@@ -2,7 +2,6 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import {z} from "zod";
 
-// Mock users for demonstration
 const users = [
   {
     id: "1",
@@ -35,7 +34,6 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
         password: {label: "Password", type: "password"},
       },
       async authorize(credentials) {
-        // Validate credentials format
         const parsedCredentials = z
           .object({email: z.string().email(), password: z.string().min(6)})
           .safeParse(credentials);
@@ -47,12 +45,10 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
         const {email, password} = parsedCredentials.data;
         const user = users.find((user) => user.email === email);
 
-        // User not found
         if (!user) {
           throw new Error("Invalid email or password");
         }
 
-        // In a real app, you'd compare hashed passwords
         const passwordsMatch = user.password === password;
 
         if (passwordsMatch) {
@@ -64,7 +60,6 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
           };
         }
 
-        // Password doesn't match
         throw new Error("Invalid email or password");
       },
     }),
@@ -78,7 +73,7 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
         nextUrl.pathname.startsWith("/courses");
 
       if (isProtected && !isLoggedIn) {
-        return false; // Redirect to login
+        return false;
       }
 
       return true;

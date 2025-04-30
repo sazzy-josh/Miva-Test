@@ -2,11 +2,14 @@ import {getStudentById} from "@/lib/db";
 import Link from "next/link";
 import {FiArrowLeft} from "react-icons/fi";
 import EditStudentForm from "@/components/Forms/EditStudentForm";
+
 type Props = {
-  params: { id: string };
+  params: {id: string};
 };
-export default function EditStudentPage({ params }: Props) {
+
+export default function EditStudentPage({params}: Props) {
   const student = getStudentById(params.id);
+
   if (!student) {
     return (
       <div className='bg-gray-800 rounded-xl shadow-sm p-6 text-center'>

@@ -3,9 +3,11 @@ import {useEffect, useState} from "react";
 import {useSearchParams} from "next/navigation";
 import Link from "next/link";
 import {FiAlertTriangle} from "react-icons/fi";
+
 export default function AuthErrorPage() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const errorParam = searchParams.get("error");
     if (errorParam) {
@@ -31,6 +33,7 @@ export default function AuthErrorPage() {
       }
     }
   }, [searchParams]);
+
   return (
     <div className='min-h-screen flex items-center justify-center bg-gray-900 py-12 px-4 sm:px-6 lg:px-8'>
       <div className='max-w-md w-full space-y-8'>
@@ -42,9 +45,7 @@ export default function AuthErrorPage() {
             Authentication Error
           </h2>
           {error && (
-            <p className='mt-2 text-center text-sm text-red-400'>
-              {error}
-            </p>
+            <p className='mt-2 text-center text-sm text-red-400'>{error}</p>
           )}
         </div>
         <div className='flex justify-center'>

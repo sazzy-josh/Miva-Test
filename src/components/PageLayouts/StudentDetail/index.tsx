@@ -13,6 +13,7 @@ export default function StudentDetail({studentId}: StudentDetailProps) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
     const fetchStudentData = async () => {
       setIsLoading(true);
@@ -33,6 +34,7 @@ export default function StudentDetail({studentId}: StudentDetailProps) {
     };
     fetchStudentData();
   }, [studentId]);
+
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-[calc(100vh-120px)]'>
@@ -40,6 +42,7 @@ export default function StudentDetail({studentId}: StudentDetailProps) {
       </div>
     );
   }
+
   if (error || !student) {
     return (
       <div className='bg-gray-800 rounded-xl shadow-sm p-6 text-center'>
@@ -58,6 +61,7 @@ export default function StudentDetail({studentId}: StudentDetailProps) {
       </div>
     );
   }
+
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
@@ -143,6 +147,7 @@ export default function StudentDetail({studentId}: StudentDetailProps) {
           </div>
         </div>
       </div>
+
       <div className='bg-gray-800 rounded-xl shadow-sm p-6'>
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center gap-2'>
