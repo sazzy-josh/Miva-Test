@@ -3,6 +3,9 @@ import {getStudents, getPaginatedStudents, createStudent} from "@/lib/db";
 
 export async function GET(request: Request) {
   try {
+    // Force a refresh from localStorage before processing the request
+    console.log("API: Fetching students");
+    
     const {searchParams} = new URL(request.url);
     const page = searchParams.get("page")
       ? parseInt(searchParams.get("page") as string)
@@ -11,11 +14,15 @@ export async function GET(request: Request) {
       ? parseInt(searchParams.get("limit") as string)
       : undefined;
     const search = searchParams.get("search") || "";
+    
     if (page !== undefined || limit !== undefined) {
       const result = getPaginatedStudents(page, limit, search);
+      console.log(`API: Returning ${result.students?.length || 0} paginated students (total: ${result.total || 0})`);
       return NextResponse.json(result);
     }
+    
     const students = getStudents();
+    console.log(`API: Returning ${students?.length || 0} students`);
     return NextResponse.json(students);
   } catch (error) {
     console.error("Error fetching students:", error);

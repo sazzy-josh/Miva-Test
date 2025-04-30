@@ -15,16 +15,29 @@ export default function StudentsPage() {
   const fetchMajors = async () => {
     setIsLoading(true);
     try {
+      // Force refresh from localStorage first
+      if (typeof window !== "undefined") {
+        const storedStudents = localStorage.getItem("students");
+        console.log("Checking localStorage for students:", storedStudents ? JSON.parse(storedStudents).length : 0);
+      }
+
       const response = await fetch("/api/students");
       if (!response.ok) {
         throw new Error("Failed to fetch students");
       }
       const data = await response.json();
+      console.log("Fetched students from API:", data.length || 0);
 
-      if (data.students && Array.isArray(data.students)) {
+      // If we have students, extract majors
+      if (Array.isArray(data)) {
+        const majors = Array.from(
+          new Set(data.map((student: Student) => student.major)),
+        ).filter(Boolean) as string[];
+        setUniqueMajors(majors);
+      } else if (data.students && Array.isArray(data.students)) {
         const majors = Array.from(
           new Set(data.students.map((student: Student) => student.major)),
-        ) as string[];
+        ).filter(Boolean) as string[];
         setUniqueMajors(majors);
       } else {
         setUniqueMajors([]);

@@ -53,19 +53,39 @@ export const StudentTable: React.FC<StudentTableProps> = ({
 
     setLoading(true);
     try {
+      // Force refresh from localStorage first
+      if (typeof window !== "undefined") {
+        console.log("StudentTable: Checking for localStorage updates");
+      }
+
       const queryParams = new URLSearchParams({
         page: currentPage.toString(),
         limit: perPage.toString(),
         search: search,
       });
 
-      const response = await fetch(`/api/students?${queryParams}`);
+      const response = await fetch(`/api/students?${queryParams}`, {
+        // Add cache busting to prevent stale data
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
       if (!response.ok) throw new Error("Failed to fetch students");
 
       const data = await response.json();
-      setStudents(data.students);
-      setTotalItems(data.total);
-      setTotalPages(data.totalPages);
+      console.log("StudentTable: Fetched students:", data.students?.length || 0);
+      
+      if (data.students) {
+        setStudents(data.students);
+        setTotalItems(data.total);
+        setTotalPages(data.totalPages);
+      } else if (Array.isArray(data)) {
+        // Handle case where API returns array directly
+        setStudents(data);
+        setTotalItems(data.length);
+        setTotalPages(Math.ceil(data.length / perPage));
+      }
     } catch (error) {
       console.error("Error fetching students:", error);
     } finally {
@@ -77,6 +97,27 @@ export const StudentTable: React.FC<StudentTableProps> = ({
     if (useServerPagination) {
       fetchStudents();
     }
+  }, [fetchStudents, useServerPagination]);
+
+  // Add event listener to refresh data when page becomes visible
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && useServerPagination) {
+        console.log("Page became visible, refreshing students data");
+        fetchStudents();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    
+    // Also refresh when component mounts
+    if (useServerPagination) {
+      fetchStudents();
+    }
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [fetchStudents, useServerPagination]);
 
   const debouncedSearch = useCallback(

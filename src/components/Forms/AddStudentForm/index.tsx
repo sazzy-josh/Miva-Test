@@ -81,17 +81,55 @@ export default function AddStudentForm() {
         ...formData,
         enrolledCourses: [],
       };
+      
+      console.log("Adding new student:", studentData);
+      
       const response = await fetch("/api/students", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          // Add cache control headers to prevent caching
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache"
         },
         body: JSON.stringify(studentData),
       });
+      
       if (!response.ok) {
         throw new Error("Failed to create student");
       }
-      router.push("/students");
+      
+      const newStudent = await response.json();
+      console.log("Student created successfully:", newStudent);
+      
+      // Manually update localStorage to ensure it's in sync
+      if (typeof window !== "undefined") {
+        try {
+          const storedStudents = localStorage.getItem("students");
+          let students = [];
+          
+          if (storedStudents) {
+            students = JSON.parse(storedStudents);
+          }
+          
+          // Add the new student to the array
+          students.push(newStudent);
+          
+          // Save back to localStorage
+          localStorage.setItem("students", JSON.stringify(students));
+          console.log("Updated localStorage with new student, total students:", students.length);
+        } catch (error) {
+          console.error("Error updating localStorage:", error);
+        }
+      }
+      
+      // Use router.refresh() to ensure Next.js refreshes the data
+      router.refresh();
+      
+      // Delay the redirect slightly to allow for data refresh
+      setTimeout(() => {
+        router.push("/students");
+      }, 100);
     } catch (error) {
       console.error("Error creating student:", error);
       alert("Failed to create student. Please try again.");
