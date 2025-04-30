@@ -14,6 +14,7 @@ export default function StudentActions({
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
