@@ -1,36 +1,144 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Student Management System
+
+A comprehensive web application for managing student data, course enrollments, and academic records. Built with Next.js 15.3.1, React 19, and Chakra UI with a dark mode interface.
+
+![Student Management System](https://miva-university.s3.eu-west-2.amazonaws.com/wp-content/uploads/2023/05/15101916/miva-mobile-logo.png)
+
+## Features
+
+- **User Authentication**: Secure login system with NextAuth.js
+- **Student Management**: Complete CRUD operations for student records
+- **Course Management**: View and manage course information
+- **Dashboard**: Overview of key metrics and student data
+- **Dark Mode UI**: Modern dark-themed interface built with Chakra UI and Tailwind CSS
+- **Responsive Design**: Fully responsive layout for all device sizes
+- **Data Persistence**: In-memory database with localStorage persistence
+- **Pagination**: Reusable pagination component for large data sets
+- **Search & Filtering**: Advanced search functionality for student records
+
+## Tech Stack
+
+- **Framework**: Next.js 15.3.1
+- **UI Libraries**: Chakra UI, Tailwind CSS
+- **Authentication**: NextAuth.js
+- **State Management**: React Hooks
+- **Icons**: React Icons
+- **Form Validation**: Zod
+- **Data Storage**: In-memory with localStorage persistence
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Node.js 18.x or later
+- npm, yarn, or pnpm
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd student-management-system
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application
+
+### Authentication
+
+The system includes a mock authentication system with the following credentials:
+
+- **Email**: admin@example.com
+- **Password**: password@123
+
+## Project Structure
+
+```
+student-management-system/
+├── public/               # Static assets
+├── src/
+│   ├── app/              # Next.js App Router
+│   │   ├── (auth)/       # Authentication routes
+│   │   │   └── login/    # Login page
+│   │   ├── (default)/    # Protected routes
+│   │   │   ├── dashboard/# Dashboard page
+│   │   │   └── students/ # Student management pages
+│   │   └── api/         # API routes
+│   ├── components/       # Reusable components
+│   │   ├── PageLayouts/  # Layout components
+│   │   └── Tables/       # Table components
+│   ├── lib/              # Utility functions
+│   │   ├── auth.ts       # Authentication configuration
+│   │   └── db.ts         # Mock database implementation
+│   └── types/            # TypeScript type definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API Routes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Authentication**: `/api/auth/[...nextauth]`
+- **Students**: 
+  - GET, POST: `/api/students`
+  - GET, PUT, DELETE: `/api/students/[id]`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Database
 
-## Learn More
+The application uses an in-memory database with localStorage persistence. The database includes:
 
-To learn more about Next.js, take a look at the following resources:
+- **Students**: Student records with personal and academic information
+- **Courses**: Course information including instructors and schedules
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Features in Detail
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Student Management
 
-## Deploy on Vercel
+- Create, read, update, and delete student records
+- View detailed student information
+- Manage course enrollments
+- Filter and search students by various criteria
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Dashboard
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Overview of key metrics
+- Quick access to student and course information
+- Visual representation of data
+
+### Pagination
+
+- Custom pagination component for handling large datasets
+- Configurable items per page
+- Navigation controls for moving between pages
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch: `git checkout -b feature/amazing-feature`
+3. Commit your changes: `git commit -m 'Add some amazing feature'`
+4. Push to the branch: `git push origin feature/amazing-feature`
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Next.js team for the amazing framework
+- Chakra UI for the component library
+- All contributors who have helped shape this project

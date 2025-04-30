@@ -1,19 +1,54 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import {FiArrowLeft, FiCalendar, FiMail, FiBook} from "react-icons/fi";
-import {Course} from "@/types/student";
+import {Course, Student} from "@/types/student";
 import StudentActions from "@/components/Actions/StudentActions";
-import {getStudentById} from "@/lib/db";
+import {useEffect, useState} from "react";
 
-type Props = {
-  params: { id: string };
-};
+interface StudentDetailProps {
+  studentId: string;
+}
 
-export default function StudentDetailPage({ params }: Props) {
-  const student = getStudentById(params.id);
-  const courses: Course[] = [];
+export default function StudentDetail({studentId}: StudentDetailProps) {
+  const [student, setStudent] = useState<Student | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!student) {
+  useEffect(() => {
+    const fetchStudentData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/students/${studentId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch student data");
+        }
+        const data = await response.json();
+        setStudent(data);
+        // In a real app, we would fetch enrolled courses here
+        setCourses(data.enrolledCourses || []);
+      } catch (err) {
+        console.error("Error fetching student:", err);
+        setError("Failed to load student data");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStudentData();
+  }, [studentId]);
+
+  if (isLoading) {
+    return (
+      <div className='flex items-center justify-center h-[calc(100vh-120px)]'>
+        <div className='animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary'></div>
+      </div>
+    );
+  }
+
+  if (error || !student) {
     return (
       <div className='bg-gray-800 rounded-xl shadow-sm p-6 text-center'>
         <h2 className='text-xl font-bold mb-4'>Student Not Found</h2>
@@ -46,7 +81,7 @@ export default function StudentDetailPage({ params }: Props) {
         </div>
 
         <StudentActions
-          studentId={params.id}
+          studentId={studentId}
           studentName={student?.name || ""}
         />
       </div>

@@ -1,7 +1,6 @@
 import {Student, Course} from "@/types/student";
 
-// Mock student data
-const students: Student[] = [
+let students: Student[] = [
   {
     id: "1",
     name: "John Doe",
@@ -62,7 +61,6 @@ const students: Student[] = [
   },
 ];
 
-// Mock course data
 const courses: Course[] = [
   {
     id: "CS101",
@@ -117,14 +115,61 @@ const courses: Course[] = [
   },
 ];
 
-// Helper function to generate a unique ID
+if (typeof window !== 'undefined') {
+  const storedStudents = localStorage.getItem('students');
+  if (storedStudents) {
+    students = JSON.parse(storedStudents);
+  } else {
+    localStorage.setItem('students', JSON.stringify(students));
+  }
+}
+
+const saveToStorage = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('students', JSON.stringify(students));
+  }
+};
+
 export const generateId = (): string => {
   return Math.random().toString(36).substring(2, 9);
 };
 
-// Student CRUD operations
 export const getStudents = (): Student[] => {
   return students;
+};
+
+export const getPaginatedStudents = (
+  page: number = 1,
+  limit: number = 10,
+  search: string = ''
+): { students: Student[]; total: number; page: number; totalPages: number } => {
+  let filteredStudents = students;
+  
+    if (search) {
+    const searchLower = search.toLowerCase();
+    filteredStudents = students.filter(student => 
+      student.name.toLowerCase().includes(searchLower) ||
+      student.email.toLowerCase().includes(searchLower) ||
+      student.registrationNumber.toLowerCase().includes(searchLower) ||
+      student.major.toLowerCase().includes(searchLower)
+    );
+  }
+  
+  const total = filteredStudents.length;
+  const totalPages = Math.ceil(total / limit);
+  const validPage = Math.max(1, Math.min(page, totalPages || 1));
+  
+  const startIndex = (validPage - 1) * limit;
+  const endIndex = startIndex + limit;
+  
+  const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
+  
+  return {
+    students: paginatedStudents,
+    total,
+    page: validPage,
+    totalPages
+  };
 };
 
 export const getStudentById = (id: string): Student | undefined => {
@@ -134,6 +179,7 @@ export const getStudentById = (id: string): Student | undefined => {
 export const createStudent = (student: Omit<Student, "id">): Student => {
   const newStudent = {...student, id: generateId()};
   students.push(newStudent);
+  saveToStorage();
   return newStudent;
 };
 
@@ -144,6 +190,7 @@ export const updateStudent = (
   const index = students.findIndex((student) => student.id === id);
   if (index !== -1) {
     students[index] = {...students[index], ...updatedStudent};
+    saveToStorage();
     return students[index];
   }
   return undefined;
@@ -153,12 +200,12 @@ export const deleteStudent = (id: string): boolean => {
   const index = students.findIndex((student) => student.id === id);
   if (index !== -1) {
     students.splice(index, 1);
+    saveToStorage();
     return true;
   }
   return false;
 };
 
-// Course CRUD operations
 export const getCourses = (): Course[] => {
   return courses;
 };

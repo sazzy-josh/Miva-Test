@@ -9,7 +9,8 @@ const users = [
     name: "Admin User",
     email: "admin@example.com",
     password: "password@123",
-    image: "https://ui-avatars.com/api/?name=Admin+User",
+    image:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=250&auto=format&fit=crop",
   },
   {
     id: "2",
@@ -34,30 +35,37 @@ export const {handlers, auth, signIn, signOut} = NextAuth({
         password: {label: "Password", type: "password"},
       },
       async authorize(credentials) {
+        // Validate credentials format
         const parsedCredentials = z
           .object({email: z.string().email(), password: z.string().min(6)})
           .safeParse(credentials);
 
-        if (parsedCredentials.success) {
-          const {email, password} = parsedCredentials.data;
-          const user = users.find((user) => user.email === email);
-
-          if (!user) return null;
-
-          // In a real app, you'd compare hashed passwords
-          const passwordsMatch = user.password === password;
-
-          if (passwordsMatch) {
-            return {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            };
-          }
+        if (!parsedCredentials.success) {
+          throw new Error("Invalid credentials format");
         }
 
-        return null;
+        const {email, password} = parsedCredentials.data;
+        const user = users.find((user) => user.email === email);
+
+        // User not found
+        if (!user) {
+          throw new Error("Invalid email or password");
+        }
+
+        // In a real app, you'd compare hashed passwords
+        const passwordsMatch = user.password === password;
+
+        if (passwordsMatch) {
+          return {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            image: user.image,
+          };
+        }
+
+        // Password doesn't match
+        throw new Error("Invalid email or password");
       },
     }),
   ],

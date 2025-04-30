@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
+import {useState, useEffect, useCallback} from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Pagination from "@/components/Shared/Pagination";
 import {Student} from "@/types/student";
+import debounce from "lodash/debounce";
 
 export interface TableHeader {
   text: string;
@@ -12,23 +14,130 @@ export interface TableHeader {
 }
 
 export interface StudentTableProps {
-  students: Student[];
+  students?: Student[];
   headers: TableHeader[];
   limit?: number;
   showActions?: boolean;
   className?: string;
+  pagination?: boolean;
+  itemsPerPage?: number;
+  itemsPerPageOptions?: number[];
+  initialSearch?: string;
+  useServerPagination?: boolean;
 }
 
 export const StudentTable: React.FC<StudentTableProps> = ({
-  students,
+  students: initialStudents = [],
   headers,
   limit,
   showActions = false,
   className = "",
+  pagination = false,
+  itemsPerPage = 10,
+  itemsPerPageOptions = [5, 10, 25, 50],
+  initialSearch = "",
+  useServerPagination = false,
 }) => {
-  const displayStudents = limit ? students.slice(0, limit) : students;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [perPage, setPerPage] = useState(itemsPerPage);
+  const [search, setSearch] = useState(initialSearch);
+  const [students, setStudents] = useState<Student[]>(initialStudents);
+  const [totalItems, setTotalItems] = useState(initialStudents.length);
+  const [, setTotalPages] = useState<number>(1);
+  const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState(initialSearch);
 
-  // Function to render cell content based on the header value
+  // Fetch students with server-side pagination
+  const fetchStudents = useCallback(async () => {
+    if (!useServerPagination) return;
+
+    setLoading(true);
+    try {
+      const queryParams = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: perPage.toString(),
+        search: search,
+      });
+
+      const response = await fetch(`/api/students?${queryParams}`);
+      if (!response.ok) throw new Error("Failed to fetch students");
+
+      const data = await response.json();
+      setStudents(data.students);
+      setTotalItems(data.total);
+      setTotalPages(data.totalPages);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPage, perPage, search, useServerPagination]);
+
+  useEffect(() => {
+    if (useServerPagination) {
+      fetchStudents();
+    }
+  }, [fetchStudents, useServerPagination]);
+
+  const debouncedSearch = useCallback(
+    debounce((value: string) => {
+      setSearch(value);
+      if (currentPage !== 1) setCurrentPage(1);
+    }, 2000),
+    [],
+  );
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setInputValue(value);
+    debouncedSearch(value);
+  };
+
+  const handleItemsPerPageChange = (newPerPage: number) => {
+    setPerPage(newPerPage);
+    setCurrentPage(1);
+  };
+
+  // If not using server pagination, handle client-side filtering and pagination
+  let displayStudents = students;
+
+  if (!useServerPagination) {
+    // Filter by search term if provided
+    if (search) {
+      const searchLower = search.toLowerCase();
+      displayStudents = initialStudents.filter(
+        (student) =>
+          student.name.toLowerCase().includes(searchLower) ||
+          student.email.toLowerCase().includes(searchLower) ||
+          student.registrationNumber.toLowerCase().includes(searchLower) ||
+          student.major.toLowerCase().includes(searchLower),
+      );
+
+      // Update total items for pagination
+      if (pagination) {
+        setTotalItems(displayStudents.length);
+      }
+    } else {
+      displayStudents = initialStudents;
+      if (pagination) {
+        setTotalItems(initialStudents.length);
+      }
+    }
+
+    if (pagination && !useServerPagination) {
+      const indexOfLastItem = currentPage * perPage;
+      const indexOfFirstItem = indexOfLastItem - perPage;
+      displayStudents = displayStudents?.slice(
+        indexOfFirstItem,
+        indexOfLastItem,
+      );
+    }
+
+    if (limit) {
+      displayStudents = displayStudents?.slice(0, limit);
+    }
+  }
+
   const renderCell = (student: Student, header: TableHeader) => {
     switch (header.value) {
       case "name":
@@ -43,7 +152,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
                 className='rounded-full w-[45px] h-[45px] object-cover'
               />
             ) : (
-              <div className='w-[45px] h-[45px] rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center'>
+              <div className='w-[45px] h-[45px] rounded-full bg-gray-700 flex items-center justify-center'>
                 <span className='text-xs font-medium'>
                   {student.name.charAt(0).toUpperCase()}
                 </span>
@@ -51,17 +160,13 @@ export const StudentTable: React.FC<StudentTableProps> = ({
             )}
             <div>
               <p className='font-medium'>{student.name}</p>
-              <p className='text-sm text-gray-500 dark:text-gray-400'>
-                {student.email}
-              </p>
+              <p className='text-sm text-gray-400'>{student.email}</p>
             </div>
           </div>
         );
       case "registrationNumber":
         return (
-          <span className='text-gray-500 dark:text-gray-400'>
-            {student.registrationNumber}
-          </span>
+          <span className='text-gray-400'>{student.registrationNumber}</span>
         );
       case "major":
         return student.major;
@@ -70,10 +175,10 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           <span
             className={`px-2 py-1 rounded-full text-xs ${
               student.gpa >= 3.5
-                ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"
+                ? "bg-green-900/30 text-green-400"
                 : student.gpa >= 3.0
-                ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400"
-                : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"
+                ? "bg-blue-900/30 text-blue-400"
+                : "bg-yellow-900/30 text-yellow-400"
             }`}
           >
             {student.gpa.toFixed(1)}
@@ -86,7 +191,7 @@ export const StudentTable: React.FC<StudentTableProps> = ({
           <div className='flex justify-end gap-2'>
             <Link
               href={`/students/${student.id}`}
-              className='px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors'
+              className='px-3 py-1 text-sm bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors'
             >
               View
             </Link>
@@ -105,53 +210,101 @@ export const StudentTable: React.FC<StudentTableProps> = ({
 
   return (
     <div className={`overflow-x-auto ${className}`}>
-      <table className='w-full'>
-        <thead>
-          <tr className='bg-gray-50 dark:bg-gray-700/50 border-b dark:border-gray-700'>
-            {headers.map((header) => (
-              <th
-                key={header.value}
-                className={`${
-                  header.align === "right" ? "text-right" : "text-left"
-                } py-3 px-4 font-medium text-gray-500 dark:text-gray-400`}
+      {(pagination || useServerPagination) && (
+        <div className='p-4 flex items-center justify-between'>
+          <div className='relative w-64'>
+            <input
+              type='text'
+              placeholder='Search students...'
+              value={inputValue}
+              onChange={handleSearchChange}
+              className='w-full px-3 py-2 pl-10 border border-gray-600 rounded-lg bg-gray-800 focus:ring-2 focus:ring-primary focus:border-primary'
+            />
+            <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+              <svg
+                className='w-5 h-5 text-gray-400'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+                xmlns='http://www.w3.org/2000/svg'
               >
-                {header.text}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {displayStudents.length === 0 ? (
-            <tr>
-              <td
-                colSpan={headers.length}
-                className='py-8 text-center text-gray-500 dark:text-gray-400'
-              >
-                No students found. Try adjusting your filters or add a new
-                student.
-              </td>
+                <path
+                  strokeLinecap='round'
+                  strokeLinejoin='round'
+                  strokeWidth={2}
+                  d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'
+                />
+              </svg>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className='flex justify-center items-center py-10'>
+          <div className='animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary'></div>
+        </div>
+      ) : (
+        <table className='w-full'>
+          <thead>
+            <tr className='bg-gray-700/50 border-b border-gray-700'>
+              {headers.map((header) => (
+                <th
+                  key={header.value}
+                  className={`${
+                    header.align === "right" ? "text-right" : "text-left"
+                  } py-3 px-4 font-medium text-gray-400`}
+                >
+                  {header.text}
+                </th>
+              ))}
             </tr>
-          ) : (
-            displayStudents.map((student) => (
-              <tr
-                key={student.id}
-                className='border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50'
-              >
-                {headers.map((header) => (
-                  <td
-                    key={`${student.id}-${header.value}`}
-                    className={`py-3 px-4 ${
-                      header.align === "right" ? "text-right" : ""
-                    }`}
-                  >
-                    {renderCell(student, header)}
-                  </td>
-                ))}
+          </thead>
+          <tbody>
+            {displayStudents.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={headers.length}
+                  className='py-8 text-center text-gray-400'
+                >
+                  No students found. Try adjusting your filters or add a new
+                  student.
+                </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              displayStudents.map((student) => (
+                <tr
+                  key={student.id}
+                  className='border-b border-gray-700 hover:bg-gray-700/50'
+                >
+                  {headers.map((header) => (
+                    <td
+                      key={`${student.id}-${header.value}`}
+                      className={`py-3 px-4 ${
+                        header.align === "right" ? "text-right" : ""
+                      }`}
+                    >
+                      {renderCell(student, header)}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      )}
+
+      {(pagination || useServerPagination) && (
+        <Pagination
+          currentPage={currentPage}
+          totalItems={totalItems}
+          itemsPerPage={perPage}
+          onPageChange={setCurrentPage}
+          onItemsPerPageChange={handleItemsPerPageChange}
+          itemsPerPageOptions={itemsPerPageOptions}
+          showItemsPerPage={true}
+        />
+      )}
     </div>
   );
 };

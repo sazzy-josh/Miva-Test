@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getStudentById, updateStudent, deleteStudent } from '@/lib/db';
 
-// GET /api/students/[id] - Fetch a single student's details
-export async function GET(
+export function GET(
   request: Request,
   { params }: { params: { id: string } }
 ) {
@@ -26,7 +25,6 @@ export async function GET(
   }
 }
 
-// PUT /api/students/[id] - Update a student
 export async function PUT(
   request: Request,
   { params }: { params: { id: string } }
@@ -52,8 +50,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/students/[id] - Delete a student
-export async function DELETE(
+export function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ) {

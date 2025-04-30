@@ -46,7 +46,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className='min-h-screen flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4'>
+    <div className='min-h-screen flex flex-col items-center justify-center bg-gray-900 py-12 px-4'>
       <div className='mb-8'>
         <Image
           src='https://miva-university.s3.eu-west-2.amazonaws.com/wp-content/uploads/2023/05/15101916/miva-mobile-logo.png'
@@ -57,21 +57,21 @@ export default function LoginPage() {
         />
       </div>
 
-      <div className='w-full max-w-md py-8 px-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg'>
+      <div className='w-full max-w-md py-8 px-8 bg-gray-800 shadow-lg rounded-lg'>
         <div className='space-y-6'>
           <div className='flex flex-col items-center space-y-2'>
-            <h2 className='text-2xl font-bold text-center text-gray-900 dark:text-white'>
+            <h2 className='text-2xl font-bold text-center text-white'>
               Sign in to your account
             </h2>
-            <p className='text-sm text-gray-600 dark:text-gray-400 text-center'>
+            <p className='text-sm text-gray-400 text-center'>
               Student Management System
             </p>
           </div>
 
           {error && (
-            <div className='flex items-center bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded-md'>
-              <FiAlertCircle className='text-red-500 dark:text-red-400 mr-2' />
-              <p className='text-sm text-red-600 dark:text-red-400'>{error}</p>
+            <div className='flex items-center bg-red-900/20 border-l-4 border-red-500 p-4 rounded-md'>
+              <FiAlertCircle className='text-red-400 mr-2' />
+              <p className='text-sm text-red-400'>{error}</p>
             </div>
           )}
 
@@ -94,7 +94,7 @@ export default function LoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className='w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary'
+                    className='w-full pl-10 pr-3 py-2 border border-gray-600 bg-gray-700 rounded-md text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary'
                   />
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className='w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-md text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary'
+                    className='w-full pl-10 pr-10 py-2 border border-gray-600 bg-gray-700 rounded-md text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary'
                   />
                   <div className='absolute inset-y-0 right-0 pr-3 flex items-center'>
                     <button
@@ -139,11 +139,11 @@ export default function LoginPage() {
                     id='remember-me'
                     name='remember-me'
                     type='checkbox'
-                    className='h-4 w-4 text-primary focus:ring-primary border-gray-300 dark:border-gray-600 rounded'
+                    className='h-4 w-4 text-primary focus:ring-primary border-gray-600 rounded'
                   />
                   <label
                     htmlFor='remember-me'
-                    className='ml-2 block text-sm text-gray-600 dark:text-gray-400'
+                    className='ml-2 block text-sm text-gray-400'
                   >
                     Remember me
                   </label>

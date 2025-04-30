@@ -2,56 +2,55 @@
 
 import {useState, useEffect} from "react";
 import Link from "next/link";
-import {FiSearch, FiPlus, FiFilter, FiChevronDown} from "react-icons/fi";
-import {getStudents} from "@/lib/db";
+import {FiPlus, FiFilter, FiChevronDown} from "react-icons/fi";
 import {Student} from "@/types/student";
 import StudentTable from "@/components/Tables/StudentTable";
 
 export default function StudentsPage() {
-  const [students, setStudents] = useState<Student[]>([]);
-  const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [filterMajor, setFilterMajor] = useState("");
+  const [uniqueMajors, setUniqueMajors] = useState<string[]>([]);
 
-  useEffect(() => {
-    // Simulate API loading
-    const timer = setTimeout(() => {
-      const fetchedStudents = getStudents();
-      setStudents(fetchedStudents);
-      setFilteredStudents(fetchedStudents);
+  // Fetch unique majors for the filter dropdown
+  const fetchMajors = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/students");
+      if (!response.ok) {
+        throw new Error("Failed to fetch students");
+      }
+      const data = await response.json();
+
+      if (data.students && Array.isArray(data.students)) {
+        const majors = Array.from(
+          new Set(data.students.map((student: Student) => student.major)),
+        ) as string[];
+        setUniqueMajors(majors);
+      } else {
+        setUniqueMajors([]);
+      }
+    } catch (error) {
+      console.error("Error fetching majors:", error);
+    } finally {
       setIsLoading(false);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
+    }
+  };
 
   useEffect(() => {
-    let result = [...students];
+    fetchMajors();
 
-    // Apply search filter
-    if (searchQuery) {
-      result = result.filter(
-        (student) =>
-          student.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          student.registrationNumber
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          student.email.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchMajors();
+      }
+    };
 
-    // Apply major filter
-    if (filterMajor) {
-      result = result.filter((student) => student.major === filterMajor);
-    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    setFilteredStudents(result);
-  }, [students, searchQuery, filterMajor]);
-
-  const uniqueMajors = Array.from(
-    new Set(students.map((student) => student.major)),
-  );
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, []);
 
   if (isLoading) {
     return (
@@ -66,9 +65,7 @@ export default function StudentsPage() {
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
         <div>
           <h1 className='text-2xl font-bold'>Students</h1>
-          <p className='text-gray-500 dark:text-gray-400'>
-            Manage student records
-          </p>
+          <p className='text-gray-400'>Manage student records</p>
         </div>
         <Link
           href='/students/new'
@@ -80,26 +77,17 @@ export default function StudentsPage() {
       </div>
 
       {/* Filters */}
-      <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4'>
+      <div className='bg-gray-800 rounded-xl shadow-sm p-4'>
         <div className='flex flex-col md:flex-row gap-4'>
           <div className='relative flex-1'>
-            <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-              <FiSearch className='text-gray-400' />
-            </div>
-            <input
-              type='text'
-              placeholder='Search students...'
-              className='pl-10 pr-4 py-2 w-full border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-primary'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+            {/* Search is now handled directly in the StudentTable component */}
           </div>
           <div className='relative'>
             <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
               <FiFilter className='text-gray-400' />
             </div>
             <select
-              className='pl-10 pr-8 py-2 border dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:border-primary appearance-none'
+              className='pl-10 pr-8 py-2 border border-gray-700 rounded-lg bg-gray-800 focus:ring-2 focus:ring-primary focus:border-primary appearance-none'
               value={filterMajor}
               onChange={(e) => setFilterMajor(e.target.value)}
             >
@@ -118,9 +106,8 @@ export default function StudentsPage() {
       </div>
 
       {/* Students Table */}
-      <div className='bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
+      <div className='bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
         <StudentTable
-          students={filteredStudents}
           headers={[
             {text: "Name", value: "name"},
             {text: "Reg No", value: "registrationNumber"},
@@ -130,6 +117,9 @@ export default function StudentsPage() {
             {text: "Actions", value: "actions", align: "right"},
           ]}
           showActions={true}
+          useServerPagination={true}
+          itemsPerPage={5}
+          initialSearch=''
         />
       </div>
     </div>

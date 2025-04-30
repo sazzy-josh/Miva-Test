@@ -1,9 +1,20 @@
 import { NextResponse } from 'next/server';
-import { getStudents, createStudent } from '@/lib/db';
+import { getStudents, getPaginatedStudents, createStudent } from '@/lib/db';
 
-// GET /api/students - Fetch all students
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    
+    const page = searchParams.get('page') ? parseInt(searchParams.get('page') as string) : undefined;
+    const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit') as string) : undefined;
+    const search = searchParams.get('search') || '';
+    
+    if (page !== undefined || limit !== undefined) {
+      const result = getPaginatedStudents(page, limit, search);
+      return NextResponse.json(result);
+    }
+    
+
     const students = getStudents();
     return NextResponse.json(students);
   } catch (error) {
@@ -15,15 +26,14 @@ export async function GET() {
   }
 }
 
-// POST /api/students - Add a new student
 export async function POST(request: Request) {
   try {
     const studentData = await request.json();
     
-    // Validate required fields
     const requiredFields = ['name', 'email', 'registrationNumber', 'major', 'dateOfBirth', 'gpa'];
     for (const field of requiredFields) {
-      if (!studentData[field]) {
+      if (studentData[field] === undefined || studentData[field] === null || 
+          (typeof studentData[field] === 'string' && studentData[field].trim() === '')) {
         return NextResponse.json(
           { error: `Missing required field: ${field}` },
           { status: 400 }
@@ -31,9 +41,15 @@ export async function POST(request: Request) {
       }
     }
     
+    // Ensure enrolledCourses is an array
+    if (!studentData.enrolledCourses) {
+      studentData.enrolledCourses = [];
+    }
+    
     // Add the student
     const newStudent = createStudent(studentData);
     
+    // Return the newly created student with 201 Created status
     return NextResponse.json(newStudent, { status: 201 });
   } catch (error) {
     console.error('Error adding student:', error);
