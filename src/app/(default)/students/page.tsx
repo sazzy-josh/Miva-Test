@@ -11,24 +11,15 @@ export default function StudentsPage() {
   const [filterMajor, setFilterMajor] = useState("");
   const [uniqueMajors, setUniqueMajors] = useState<string[]>([]);
 
-  // Fetch unique majors for the filter dropdown
   const fetchMajors = async () => {
     setIsLoading(true);
     try {
-      // Force refresh from localStorage first
-      if (typeof window !== "undefined") {
-        const storedStudents = localStorage.getItem("students");
-        console.log("Checking localStorage for students:", storedStudents ? JSON.parse(storedStudents).length : 0);
-      }
-
       const response = await fetch("/api/students");
       if (!response.ok) {
         throw new Error("Failed to fetch students");
       }
       const data = await response.json();
-      console.log("Fetched students from API:", data.length || 0);
 
-      // If we have students, extract majors
       if (Array.isArray(data)) {
         const majors = Array.from(
           new Set(data.map((student: Student) => student.major)),
@@ -51,18 +42,6 @@ export default function StudentsPage() {
 
   useEffect(() => {
     fetchMajors();
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        fetchMajors();
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
   }, []);
 
   if (isLoading) {
@@ -131,7 +110,7 @@ export default function StudentsPage() {
           ]}
           showActions={true}
           useServerPagination={true}
-          itemsPerPage={5}
+          itemsPerPage={10}
           initialSearch=''
         />
       </div>

@@ -94,8 +94,7 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
         throw new Error("Failed to update student");
       }
       router.push("/students");
-    } catch (error) {
-      console.error("Error updating student:", error);
+    } catch (error: unknown) {
       setError("Failed to update student. Please try again.");
     } finally {
       setIsSubmitting(false);

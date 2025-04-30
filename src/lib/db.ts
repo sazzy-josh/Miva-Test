@@ -57,49 +57,11 @@ const courses: Course[] = [
   },
 ];
 
-// Initialize students from localStorage on client-side
-if (typeof window !== "undefined") {
-  try {
-    const storedStudents = localStorage.getItem("students");
-    if (storedStudents) {
-      students = JSON.parse(storedStudents);
-      console.log("Loaded students from localStorage:", students.length);
-    } else {
-      localStorage.setItem("students", JSON.stringify(students));
-      console.log("Initialized empty students array in localStorage");
-    }
-  } catch (error) {
-    console.error("Error loading students from localStorage:", error);
-  }
-}
-
-const saveToStorage = () => {
-  if (typeof window !== "undefined") {
-    try {
-      localStorage.setItem("students", JSON.stringify(students));
-      console.log("Saved students to localStorage:", students.length);
-    } catch (error) {
-      console.error("Error saving students to localStorage:", error);
-    }
-  }
-};
-
 export const generateId = (): string => {
   return Math.random().toString(36).substring(2, 9);
 };
 
 export const getStudents = (): Student[] => {
-  // Load the latest students from localStorage on client-side before returning
-  if (typeof window !== "undefined") {
-    try {
-      const storedStudents = localStorage.getItem("students");
-      if (storedStudents) {
-        students = JSON.parse(storedStudents);
-      }
-    } catch (error) {
-      console.error("Error loading students in getStudents:", error);
-    }
-  }
   return students;
 };
 
@@ -108,17 +70,6 @@ export const getPaginatedStudents = (
   limit: number = 10,
   search: string = "",
 ): {students: Student[]; total: number; page: number; totalPages: number} => {
-  // Load the latest students from localStorage on client-side before pagination
-  if (typeof window !== "undefined") {
-    try {
-      const storedStudents = localStorage.getItem("students");
-      if (storedStudents) {
-        students = JSON.parse(storedStudents);
-      }
-    } catch (error) {
-      console.error("Error loading students in getPaginatedStudents:", error);
-    }
-  }
   let filteredStudents = students;
   if (search) {
     const searchLower = search.toLowerCase();
@@ -150,21 +101,8 @@ export const getStudentById = (id: string): Student | undefined => {
 };
 
 export const createStudent = (student: Omit<Student, "id">): Student => {
-  // Load the latest students from localStorage on client-side before adding new student
-  if (typeof window !== "undefined") {
-    try {
-      const storedStudents = localStorage.getItem("students");
-      if (storedStudents) {
-        students = JSON.parse(storedStudents);
-      }
-    } catch (error) {
-      console.error("Error loading students before create:", error);
-    }
-  }
-
   const newStudent = {...student, id: generateId()};
   students.push(newStudent);
-  saveToStorage();
   return newStudent;
 };
 
@@ -172,44 +110,19 @@ export const updateStudent = (
   id: string,
   updatedStudent: Partial<Student>,
 ): Student | undefined => {
-  // Load the latest students from localStorage on client-side before updating
-  if (typeof window !== "undefined") {
-    try {
-      const storedStudents = localStorage.getItem("students");
-      if (storedStudents) {
-        students = JSON.parse(storedStudents);
-      }
-    } catch (error) {
-      console.error("Error loading students before update:", error);
-    }
-  }
-
   const index = students.findIndex((student) => student.id === id);
   if (index !== -1) {
     students[index] = {...students[index], ...updatedStudent};
-    saveToStorage();
+
     return students[index];
   }
   return undefined;
 };
 
 export const deleteStudent = (id: string): boolean => {
-  // Load the latest students from localStorage on client-side before deleting
-  if (typeof window !== "undefined") {
-    try {
-      const storedStudents = localStorage.getItem("students");
-      if (storedStudents) {
-        students = JSON.parse(storedStudents);
-      }
-    } catch (error) {
-      console.error("Error loading students before delete:", error);
-    }
-  }
-
   const index = students.findIndex((student) => student.id === id);
   if (index !== -1) {
     students.splice(index, 1);
-    saveToStorage();
     return true;
   }
   return false;
