@@ -1,29 +1,22 @@
 "use client";
-
 import {useState} from "react";
 import {useSession} from "next-auth/react";
 import {FiMenu} from "react-icons/fi";
 import Sidebar from "@/components/Shared/Sidebar";
-
 import Image from "next/image";
-
 export default function DefaultLayout({children}: {children: React.ReactNode}) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const {data: session} = useSession();
-
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
   const closeSidebar = () => {
     setIsSidebarOpen(false);
   };
-
   return (
     <div className='min-h-screen bg-gray-900'>
       {/* Sidebar Component */}
       <Sidebar isSidebarOpen={isSidebarOpen} closeSidebar={closeSidebar} />
-
       {/* Main Content Area */}
       <div className='ml-0 lg:ml-64 min-h-screen flex flex-col'>
         {/* Header */}
@@ -59,7 +52,6 @@ export default function DefaultLayout({children}: {children: React.ReactNode}) {
             </div>
           </div>
         </header>
-
         {/* Page content */}
         <main className='flex-1 p-4 md:p-6'>
           <div className='max-w-7xl mx-auto'>{children}</div>

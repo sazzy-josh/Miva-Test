@@ -1,7 +1,5 @@
 "use client";
-
 import {FiChevronLeft, FiChevronRight} from "react-icons/fi";
-
 export interface PaginationProps {
   currentPage: number;
   totalItems: number;
@@ -11,7 +9,6 @@ export interface PaginationProps {
   itemsPerPageOptions?: number[];
   showItemsPerPage?: boolean;
 }
-
 const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalItems,
@@ -24,7 +21,6 @@ const Pagination: React.FC<PaginationProps> = ({
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-
   return (
     <div className='flex flex-col sm:flex-row justify-between items-center px-4 py-3 border-t border-gray-700 gap-4'>
       <div className='text-sm text-gray-400 flex flex-wrap items-center gap-2'>
@@ -39,7 +35,6 @@ const Pagination: React.FC<PaginationProps> = ({
           </span>{" "}
           of <span className='font-medium'>{totalItems}</span> results
         </div>
-
         {showItemsPerPage && onItemsPerPageChange && (
           <div className='flex items-center gap-2'>
             <span>Show</span>
@@ -71,26 +66,19 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <FiChevronLeft className='w-5 h-5' />
         </button>
-
         {/* Page numbers */}
         <div className='flex items-center space-x-1'>
           {Array.from({length: Math.min(5, totalPages)}, (_, i) => {
-            // Show first page, last page, current page, and pages around current page
             let pageNum;
             if (totalPages <= 5) {
-              // If 5 or fewer pages, show all pages
               pageNum = i + 1;
             } else if (currentPage <= 3) {
-              // If near the start, show first 5 pages
               pageNum = i + 1;
             } else if (currentPage >= totalPages - 2) {
-              // If near the end, show last 5 pages
               pageNum = totalPages - 4 + i;
             } else {
-              // Show current page and 2 pages before/after
               pageNum = currentPage - 2 + i;
             }
-
             return (
               <button
                 key={pageNum}
@@ -106,7 +94,6 @@ const Pagination: React.FC<PaginationProps> = ({
             );
           })}
         </div>
-
         <button
           onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
           disabled={currentPage === totalPages || totalPages === 0}
@@ -123,5 +110,4 @@ const Pagination: React.FC<PaginationProps> = ({
     </div>
   );
 };
-
 export default Pagination;

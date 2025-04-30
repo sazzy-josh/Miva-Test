@@ -1,17 +1,13 @@
 "use client";
-
 import {useState} from "react";
 import {useRouter} from "next/navigation";
 import Link from "next/link";
 import {FiArrowLeft, FiSave, FiX} from "react-icons/fi";
 import {Student} from "@/types/student";
-
 type FormData = Omit<Student, "id" | "avatar" | "enrolledCourses">;
-
 interface EditStudentFormProps {
   student: Student;
 }
-
 export default function EditStudentForm({student}: EditStudentFormProps) {
   const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
@@ -27,13 +23,11 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const handleChange = (field: keyof FormData, value: string | number) => {
     setFormData((prev) => ({
       ...prev,
       [field]: value,
     }));
-
     if (errors[field]) {
       setErrors((prev) => ({
         ...prev,
@@ -41,16 +35,13 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
       }));
     }
   };
-
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
     let isValid = true;
-
     if (!formData.name.trim()) {
       newErrors.name = "Name is required";
       isValid = false;
     }
-
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
       isValid = false;
@@ -58,40 +49,31 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
       newErrors.email = "Please enter a valid email address";
       isValid = false;
     }
-
     if (!formData.registrationNumber.trim()) {
       newErrors.registrationNumber = "Registration number is required";
       isValid = false;
     }
-
     if (!formData.major.trim()) {
       newErrors.major = "Major is required";
       isValid = false;
     }
-
     if (!formData.dateOfBirth) {
       newErrors.dateOfBirth = "Date of birth is required";
       isValid = false;
     }
-
     if (formData.gpa < 0 || formData.gpa > 4.0) {
       newErrors.gpa = "GPA must be between 0 and 4.0";
       isValid = false;
     }
-
     setErrors(newErrors);
     return isValid;
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) {
       return;
     }
-
     setIsSubmitting(true);
-
     try {
       const response = await fetch(`/api/students/${student?.id}`, {
         method: "PUT",
@@ -103,11 +85,9 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
           enrolledCourses: student.enrolledCourses || [],
         }),
       });
-
       if (!response.ok) {
         throw new Error("Failed to update student");
       }
-
       router.push("/students");
     } catch (error) {
       console.error("Error updating student:", error);
@@ -116,7 +96,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
       setIsSubmitting(false);
     }
   };
-
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
@@ -130,7 +109,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
           <h1 className='text-2xl font-bold'>Edit Student</h1>
         </div>
       </div>
-
       <div className='bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
         <form onSubmit={handleSubmit} className='p-6'>
           {error && (
@@ -138,7 +116,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
               {error}
             </div>
           )}
-
           <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
             <div>
               <label
@@ -160,7 +137,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
                 <p className='mt-1 text-sm text-red-500'>{errors.name}</p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor='email'
@@ -181,7 +157,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
                 <p className='mt-1 text-sm text-red-500'>{errors.email}</p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor='registrationNumber'
@@ -208,7 +183,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
                 </p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor='major'
@@ -242,7 +216,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
                 <p className='mt-1 text-sm text-red-500'>{errors.major}</p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor='dateOfBirth'
@@ -265,7 +238,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
                 </p>
               )}
             </div>
-
             <div>
               <label
                 htmlFor='gpa'
@@ -292,7 +264,6 @@ export default function EditStudentForm({student}: EditStudentFormProps) {
               )}
             </div>
           </div>
-
           <div className='flex justify-end gap-3 mt-8'>
             <Link
               href={`/students/${student.id}`}

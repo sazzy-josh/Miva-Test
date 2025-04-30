@@ -1,66 +1,5 @@
 import {Student, Course} from "@/types/student";
-
-let students: Student[] = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john.doe@university.edu",
-    registrationNumber: "REG001",
-    major: "Computer Science",
-    dateOfBirth: "1998-05-15",
-    gpa: 3.8,
-    enrolledCourses: ["CS101", "CS201", "MATH101"],
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane.smith@university.edu",
-    registrationNumber: "REG002",
-    major: "Biology",
-    dateOfBirth: "1999-08-22",
-    gpa: 3.9,
-    avatar:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=250&auto=format&fit=crop",
-    enrolledCourses: ["BIO101", "BIO201", "CHEM101"],
-  },
-  {
-    id: "3",
-    name: "Michael Johnson",
-    email: "michael.johnson@university.edu",
-    registrationNumber: "REG003",
-    major: "Business Administration",
-    dateOfBirth: "1997-11-30",
-    gpa: 3.5,
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=250&auto=format&fit=crop",
-    enrolledCourses: ["BUS101", "ECON101", "MKT201"],
-  },
-  {
-    id: "4",
-    name: "Emily Davis",
-    email: "emily.davis@university.edu",
-    registrationNumber: "REG004",
-    major: "Psychology",
-    dateOfBirth: "1998-02-14",
-    gpa: 3.7,
-    avatar:
-      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=250&auto=format&fit=crop",
-    enrolledCourses: ["PSY101", "PSY201", "SOC101"],
-  },
-  {
-    id: "5",
-    name: "David Wilson",
-    email: "david.wilson@university.edu",
-    registrationNumber: "REG005",
-    major: "Engineering",
-    dateOfBirth: "1997-07-08",
-    gpa: 3.6,
-    avatar:
-      "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=250&auto=format&fit=crop",
-    enrolledCourses: ["ENG101", "PHYS101", "MATH201"],
-  },
-];
-
+let students: Student[] = [];
 const courses: Course[] = [
   {
     id: "CS101",
@@ -114,75 +53,63 @@ const courses: Course[] = [
     enrolledStudents: ["3"],
   },
 ];
-
-if (typeof window !== 'undefined') {
-  const storedStudents = localStorage.getItem('students');
+if (typeof window !== "undefined") {
+  const storedStudents = localStorage.getItem("students");
   if (storedStudents) {
     students = JSON.parse(storedStudents);
   } else {
-    localStorage.setItem('students', JSON.stringify(students));
+    localStorage.setItem("students", JSON.stringify(students));
   }
 }
-
 const saveToStorage = () => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('students', JSON.stringify(students));
+  if (typeof window !== "undefined") {
+    localStorage.setItem("students", JSON.stringify(students));
   }
 };
-
 export const generateId = (): string => {
   return Math.random().toString(36).substring(2, 9);
 };
-
 export const getStudents = (): Student[] => {
   return students;
 };
-
 export const getPaginatedStudents = (
   page: number = 1,
   limit: number = 10,
-  search: string = ''
-): { students: Student[]; total: number; page: number; totalPages: number } => {
+  search: string = "",
+): {students: Student[]; total: number; page: number; totalPages: number} => {
   let filteredStudents = students;
-  
-    if (search) {
+  if (search) {
     const searchLower = search.toLowerCase();
-    filteredStudents = students.filter(student => 
-      student.name.toLowerCase().includes(searchLower) ||
-      student.email.toLowerCase().includes(searchLower) ||
-      student.registrationNumber.toLowerCase().includes(searchLower) ||
-      student.major.toLowerCase().includes(searchLower)
+    filteredStudents = students.filter(
+      (student) =>
+        student.name.toLowerCase().includes(searchLower) ||
+        student.email.toLowerCase().includes(searchLower) ||
+        student.registrationNumber.toLowerCase().includes(searchLower) ||
+        student.major.toLowerCase().includes(searchLower),
     );
   }
-  
   const total = filteredStudents.length;
   const totalPages = Math.ceil(total / limit);
   const validPage = Math.max(1, Math.min(page, totalPages || 1));
-  
   const startIndex = (validPage - 1) * limit;
   const endIndex = startIndex + limit;
-  
   const paginatedStudents = filteredStudents.slice(startIndex, endIndex);
-  
   return {
     students: paginatedStudents,
     total,
     page: validPage,
-    totalPages
+    totalPages,
   };
 };
-
 export const getStudentById = (id: string): Student | undefined => {
   return students.find((student) => student.id === id);
 };
-
 export const createStudent = (student: Omit<Student, "id">): Student => {
   const newStudent = {...student, id: generateId()};
   students.push(newStudent);
   saveToStorage();
   return newStudent;
 };
-
 export const updateStudent = (
   id: string,
   updatedStudent: Partial<Student>,
@@ -195,7 +122,6 @@ export const updateStudent = (
   }
   return undefined;
 };
-
 export const deleteStudent = (id: string): boolean => {
   const index = students.findIndex((student) => student.id === id);
   if (index !== -1) {
@@ -205,7 +131,6 @@ export const deleteStudent = (id: string): boolean => {
   }
   return false;
 };
-
 export const getCourses = (): Course[] => {
   return courses;
 };

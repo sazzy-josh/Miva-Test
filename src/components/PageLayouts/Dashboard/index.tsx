@@ -1,11 +1,9 @@
 "use client";
-
 import {useEffect, useState, useCallback} from "react";
 import Link from "next/link";
 import {FiUsers, FiBookOpen, FiCalendar, FiTrendingUp} from "react-icons/fi";
 import {Student, Course} from "@/types/student";
 import StudentTable from "@/components/Tables/StudentTable";
-
 interface StatCardProps {
   title: string;
   value: string | number;
@@ -13,7 +11,6 @@ interface StatCardProps {
   change?: string;
   trend?: "up" | "down" | "neutral";
 }
-
 const StatCard = ({title, value, icon, change, trend}: StatCardProps) => {
   return (
     <div className='bg-gray-800 rounded-xl shadow-sm p-6'>
@@ -46,14 +43,11 @@ const StatCard = ({title, value, icon, change, trend}: StatCardProps) => {
     </div>
   );
 };
-
 export default function Dashboard() {
   const [, setStudents] = useState<Student[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [statCards, setStatCards] = useState<StatCardProps[]>([]);
-
-  // Function to update stat cards with fresh data
   const updateStatCards = useCallback(
     (studentsData: Student[], coursesData: Course[]) => {
       const avgGpa =
@@ -63,7 +57,6 @@ export default function Dashboard() {
               studentsData.length
             ).toFixed(2)
           : "0.00";
-
       setStatCards([
         {
           title: "Total Students",
@@ -95,7 +88,6 @@ export default function Dashboard() {
     },
     [],
   );
-
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -105,10 +97,8 @@ export default function Dashboard() {
       }
       const studentsData = await studentsResponse.json();
       setStudents(studentsData.students);
-
       const coursesResponse = await fetch("/api/courses").catch(() => null);
       let coursesData: Course[] = [];
-
       if (coursesResponse?.ok) {
         coursesData = await coursesResponse.json();
         setCourses(coursesData);
@@ -117,7 +107,6 @@ export default function Dashboard() {
         coursesData = getCourses();
         setCourses(coursesData);
       }
-
       updateStatCards(studentsData.students, coursesData);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
@@ -125,25 +114,20 @@ export default function Dashboard() {
       setIsLoading(false);
     }
   }, [updateStatCards]);
-
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         fetchData();
       }
     };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [fetchData]);
-
   if (isLoading) {
     return (
       <div className='flex items-center justify-center h-[calc(100vh-120px)]'>
@@ -151,7 +135,6 @@ export default function Dashboard() {
       </div>
     );
   }
-
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
@@ -170,7 +153,6 @@ export default function Dashboard() {
           </Link>
         </div>
       </div>
-
       {/* Stats */}
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
         {statCards.map((card, index) => (
@@ -184,7 +166,6 @@ export default function Dashboard() {
           />
         ))}
       </div>
-
       {/* Recent Students */}
       <div className='bg-gray-800 rounded-xl shadow-sm p-6'>
         <div className='flex justify-between items-center mb-6'>
@@ -196,7 +177,6 @@ export default function Dashboard() {
             View All
           </Link>
         </div>
-
         <StudentTable
           useServerPagination={true}
           limit={5}
@@ -209,7 +189,6 @@ export default function Dashboard() {
           ]}
         />
       </div>
-
       {/* Recent Courses */}
       <div className='bg-gray-800 rounded-xl shadow-sm p-6'>
         <div className='flex justify-between items-center mb-6'>

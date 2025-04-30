@@ -1,12 +1,9 @@
 "use client";
-
 import Link from "next/link";
 import {usePathname} from "next/navigation";
 import {FiX, FiUser, FiHome, FiLogOut} from "react-icons/fi";
 import Image from "next/image";
 import {signOut} from "next-auth/react";
-// import {signOut} from "@/lib/auth";
-
 interface NavItemProps {
   href: string;
   icon: React.ReactNode;
@@ -14,7 +11,6 @@ interface NavItemProps {
   isActive: boolean;
   onClick?: () => void;
 }
-
 const NavItem = ({href, icon, label, isActive, onClick}: NavItemProps) => {
   return (
     <Link
@@ -31,20 +27,16 @@ const NavItem = ({href, icon, label, isActive, onClick}: NavItemProps) => {
     </Link>
   );
 };
-
 interface SidebarProps {
   isSidebarOpen: boolean;
   closeSidebar: () => void;
 }
-
 const Sidebar = ({isSidebarOpen, closeSidebar}: SidebarProps) => {
   const pathname = usePathname();
-
   const navItems = [
     {href: "/dashboard", icon: <FiHome />, label: "Dashboard"},
     {href: "/students", icon: <FiUser />, label: "Students"},
   ];
-
   return (
     <>
       {/* Mobile sidebar backdrop */}
@@ -54,7 +46,6 @@ const Sidebar = ({isSidebarOpen, closeSidebar}: SidebarProps) => {
           onClick={closeSidebar}
         />
       )}
-
       {/* Sidebar */}
       <aside
         className={`fixed top-0 left-0 z-30 h-full w-64 bg-gray-800 shadow-lg transform transition-transform duration-300 ease-in-out ${
@@ -81,7 +72,6 @@ const Sidebar = ({isSidebarOpen, closeSidebar}: SidebarProps) => {
               <FiX />
             </button>
           </div>
-
           {/* Navigation */}
           <div className='flex-1 p-4 overflow-y-auto'>
             <div className='space-y-1'>
@@ -97,7 +87,6 @@ const Sidebar = ({isSidebarOpen, closeSidebar}: SidebarProps) => {
               ))}
             </div>
           </div>
-
           {/* Sidebar footer */}
           <div className='p-4 border-t border-gray-700'>
             <div className='my-2 border-gray-700'></div>
@@ -114,5 +103,4 @@ const Sidebar = ({isSidebarOpen, closeSidebar}: SidebarProps) => {
     </>
   );
 };
-
 export default Sidebar;

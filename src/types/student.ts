@@ -9,7 +9,6 @@ export interface Student {
   avatar?: string;
   enrolledCourses?: string[];
 }
-
 export interface Course {
   id: string;
   title: string;

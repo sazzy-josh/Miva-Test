@@ -1,5 +1,4 @@
 "use client";
-
 import {useState} from "react";
 import {signIn} from "next-auth/react";
 import {useRouter, useSearchParams} from "next/navigation";
@@ -7,36 +6,30 @@ import Link from "next/link";
 import {FiMail, FiAlertCircle, FiEye, FiEyeOff} from "react-icons/fi";
 import {IoKeySharp} from "react-icons/io5";
 import Image from "next/image";
-
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
-
     try {
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
-
       if (result?.error) {
         setError("Invalid email or password");
         setIsLoading(false);
         return;
       }
-
       router.push(callbackUrl);
     } catch (error: unknown) {
       setError("Something went wrong. Please try again.");
@@ -44,7 +37,6 @@ export default function LoginPage() {
       console.error(error);
     }
   };
-
   return (
     <div className='min-h-screen flex flex-col items-center justify-center bg-gray-900 py-12 px-4'>
       <div className='mb-8'>
@@ -56,7 +48,6 @@ export default function LoginPage() {
           priority
         />
       </div>
-
       <div className='w-full max-w-md py-8 px-8 bg-gray-800 shadow-lg rounded-lg'>
         <div className='space-y-6'>
           <div className='flex flex-col items-center space-y-2'>
@@ -67,14 +58,12 @@ export default function LoginPage() {
               Student Management System
             </p>
           </div>
-
           {error && (
             <div className='flex items-center bg-red-900/20 border-l-4 border-red-500 p-4 rounded-md'>
               <FiAlertCircle className='text-red-400 mr-2' />
               <p className='text-sm text-red-400'>{error}</p>
             </div>
           )}
-
           <form onSubmit={handleSubmit}>
             <div className='space-y-4'>
               <div>
@@ -98,7 +87,6 @@ export default function LoginPage() {
                   />
                 </div>
               </div>
-
               <div>
                 <label htmlFor='password' className='sr-only'>
                   Password
@@ -132,7 +120,6 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
-
               <div className='flex items-center justify-between pt-2'>
                 <div className='flex items-center'>
                   <input
@@ -155,7 +142,6 @@ export default function LoginPage() {
                   Forgot password?
                 </Link>
               </div>
-
               <button
                 type='submit'
                 disabled={isLoading}
@@ -163,7 +149,6 @@ export default function LoginPage() {
               >
                 {isLoading ? "Signing in..." : "Sign in"}
               </button>
-
               <p className='text-sm text-center font-medium text-gray-600 dark:text-gray-400 mt-4'>
                 * Demo credentials:{" "}
                 <span className='font-bold'>

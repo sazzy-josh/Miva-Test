@@ -1,32 +1,25 @@
 'use client';
-
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi';
-
 interface StudentActionsProps {
   studentId: string;
   studentName: string;
 }
-
 export default function StudentActions({ studentId, studentName }: StudentActionsProps) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
   const handleDelete = async () => {
     setIsDeleting(true);
-
     try {
       const response = await fetch(`/api/students/${studentId}`, {
         method: 'DELETE',
       });
-
       if (!response.ok) {
         throw new Error('Failed to delete student');
       }
-
       setShowDeleteModal(false);
       router.push('/students');
     } catch (error) {
@@ -36,7 +29,6 @@ export default function StudentActions({ studentId, studentName }: StudentAction
       setIsDeleting(false);
     }
   };
-
   return (
     <>
       <div className='flex gap-2'>
@@ -55,7 +47,6 @@ export default function StudentActions({ studentId, studentName }: StudentAction
           Delete
         </button>
       </div>
-
       {showDeleteModal && (
         <div className='fixed inset-0 bg-black/50 flex items-center justify-center z-50'>
           <div className='bg-gray-800 rounded-xl p-6 max-w-md w-full'>

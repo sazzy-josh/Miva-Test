@@ -4,15 +4,13 @@ import {FiArrowLeft, FiCalendar, FiMail, FiBook} from "react-icons/fi";
 import {Course} from "@/types/student";
 import StudentActions from "@/components/Actions/StudentActions";
 import {getStudentById} from "@/lib/db";
-
 type Props = {
   params: { id: string };
 };
-
-export default function StudentDetailPage({ params }: Props) {
+export default async function StudentDetailPage({ params }: Props) {
+  // Make the function async to properly handle dynamic params
   const student = getStudentById(params.id);
   const courses: Course[] = [];
-
   if (!student) {
     return (
       <div className='bg-gray-800 rounded-xl shadow-sm p-6 text-center'>
@@ -31,7 +29,6 @@ export default function StudentDetailPage({ params }: Props) {
       </div>
     );
   }
-
   return (
     <div className='space-y-6'>
       <div className='flex flex-col md:flex-row justify-between items-start md:items-center gap-4'>
@@ -44,13 +41,11 @@ export default function StudentDetailPage({ params }: Props) {
           </Link>
           <h1 className='text-2xl font-bold'>Student Details</h1>
         </div>
-
         <StudentActions
           studentId={params.id}
           studentName={student?.name || ""}
         />
       </div>
-
       <div className='bg-gray-800 rounded-xl shadow-sm overflow-hidden'>
         <div className='p-6 md:p-8'>
           <div className='flex flex-col md:flex-row gap-6 md:gap-8'>
@@ -80,7 +75,6 @@ export default function StudentDetailPage({ params }: Props) {
                 <FiMail />
                 <span>{student.email}</span>
               </div>
-
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mt-6'>
                 <div>
                   <p className='text-sm text-gray-400 mb-1'>
@@ -120,7 +114,6 @@ export default function StudentDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
-
       <div className='bg-gray-800 rounded-xl shadow-sm p-6'>
         <div className='flex items-center justify-between mb-6'>
           <div className='flex items-center gap-2'>
@@ -131,7 +124,6 @@ export default function StudentDetailPage({ params }: Props) {
             {courses.length} courses
           </span>
         </div>
-
         {courses.length === 0 ? (
           <div className='text-center py-8'>
             <p className='text-gray-400 mb-4'>
